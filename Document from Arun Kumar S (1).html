@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C# Complete Cheatsheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #141720;
+    --card: #1a1e2e;
+    --border: #252a3d;
+    --accent: #5c8aff;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --accent4: #f59e0b;
+    --accent5: #f87171;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #0f1117;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+    --hot: #34d399;
+    --cold: #94a3b8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 28px 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-title {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  /* ── CHAPTER HEADER ── */
+  .chapter-header {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+    margin-top: 22px;
+    margin-bottom: 10px;
+  }
+
+  /* ── CARD: full width, 1 column ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+
+  /* ── CARD TITLE ── */
+  h2 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  h2::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 14px;
+    background: var(--accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .card.green h2  { color: var(--accent3); }
+  .card.green h2::before { background: var(--accent3); }
+  .card.purple h2 { color: var(--accent2); }
+  .card.purple h2::before { background: var(--accent2); }
+  .card.amber h2  { color: var(--accent4); }
+  .card.amber h2::before  { background: var(--accent4); }
+  .card.red h2    { color: var(--accent5); }
+  .card.red h2::before    { background: var(--accent5); }
+
+  /* ── SPLIT PANE: Most Used | Other ── */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  /* 3-way split for larger cards */
+  .split3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .pane {
+    padding: 12px 14px;
+    min-width: 0; /* prevent grid blowout */
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .pane + .pane {
+    border-left: 1px solid var(--border);
+  }
+
+  /* ── RESPONSIVE: tablet ── */
+  @media (max-width: 768px) {
+    body { padding: 14px 12px; font-size: 11px; }
+    .split, .split3 {
+      grid-template-columns: 1fr;
+    }
+    .pane + .pane {
+      border-left: none;
+      border-top: 1px solid var(--border);
+    }
+    .page-title { font-size: 24px; }
+    pre { font-size: 9.5px; }
+  }
+
+  /* ── RESPONSIVE: small mobile ── */
+  @media (max-width: 480px) {
+    body { padding: 10px 8px; }
+    .card { padding: 12px 10px; }
+    .pane { padding: 10px 10px; }
+    pre { font-size: 9px; overflow-x: auto; }
+    code { font-size: 9px; }
+    h2 { font-size: 13px; }
+  }
+
+  /* ── PANE LABEL ── */
+  .pane-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 9px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .pane-label.hot { color: var(--hot); }
+  .pane-label.cold { color: var(--cold); }
+  .pane-label.hot::before {
+    content: '★';
+    font-size: 10px;
+    color: var(--accent4);
+  }
+  .pane-label.cold::before {
+    content: '○';
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* ── SECTION LABEL (inside pane) ── */
+  .section-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+    margin-top: 10px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  /* ── TABLES ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-top: 4px;
+    table-layout: auto;
+  }
+  th {
+    background: var(--code-bg);
+    color: var(--muted);
+    font-weight: 600;
+    text-align: left;
+    padding: 4px 7px;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 3px 7px;
+    border-bottom: 1px solid #1a1e2e;
+    vertical-align: top;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+  tr:hover td { background: #1f2535; }
+  td code { font-size: 10px; white-space: nowrap; }
+
+  /* First column: method names — never break mid-word, but allow wrapping at natural points */
+  td:first-child {
+    color: var(--accent4);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    white-space: nowrap;
+    width: 52%;
+  }
+
+  /* Compare tables: first col is plain text, can wrap */
+  .compare-table td:first-child {
+    color: var(--text);
+    font-family: var(--sans);
+    white-space: normal;
+    min-width: 80px;
+  }
+  .compare-table td:first-child code { font-family: var(--mono); color: var(--accent4); }
+
+  /* On mobile, allow method names to wrap so table doesn't blow out */
+  @media (max-width: 600px) {
+    td:first-child {
+      white-space: normal;
+      word-break: break-all;
+      font-size: 9.5px;
+      width: auto;
+    }
+    td code { white-space: normal; word-break: break-all; }
+    th { white-space: normal; font-size: 9.5px; }
+    table { font-size: 10px; }
+  }
+
+  /* ── CODE BLOCKS ── */
+  code {
+    font-family: var(--mono);
+    background: var(--code-bg);
+    color: var(--accent3);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11px;
+    word-break: break-all;
+  }
+  pre {
+    font-family: var(--mono);
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 10.5px;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #a8d8c8;
+    margin: 6px 0;
+  }
+  pre .k { color: #5c8aff; }
+  pre .t { color: #a78bfa; }
+  pre .s { color: #f59e0b; }
+  pre .c { color: #4a5568; font-style: italic; }
+  pre .m { color: #34d399; }
+  pre .n { color: #f87171; }
+
+  /* ── TIPS ── */
+  .tip {
+    background: #1a1e2e;
+    border-left: 3px solid var(--accent4);
+    padding: 5px 8px;
+    border-radius: 0 4px 4px 0;
+    font-size: 11px;
+    margin: 7px 0 2px;
+    color: #cbd5e1;
+  }
+  .tip.red    { border-left-color: var(--accent5); }
+  .tip.green  { border-left-color: var(--accent3); }
+  .tip.blue   { border-left-color: var(--accent); }
+  .tip.purple { border-left-color: var(--accent2); }
+
+  /* ── PILLS ── */
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    margin: 2px 2px 2px 0;
+  }
+  .pill.blue   { background: #1e3a5f; color: var(--accent); }
+  .pill.green  { background: #0d2e22; color: var(--accent3); }
+  .pill.purple { background: #2a1f4a; color: var(--accent2); }
+  .pill.amber  { background: #2e1f0a; color: var(--accent4); }
+  .pill.red    { background: #2e0f0f; color: var(--accent5); }
+
+  .row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  p  { margin: 4px 0; font-size: 11.5px; color: #94a3b8; }
+  ul { padding-left: 14px; color: #94a3b8; font-size: 11px; }
+  li { margin: 2px 0; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+
+  /* layout helpers inside panes */
+  .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+</style>
+</head>
+<body>
+
+<div class="page-title">C# Complete Cheatsheet</div>
+<div class="subtitle">Full Foundation · Collections · I/O · LINQ · OOP · NUnit · Async</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<div class="chapter-header">► Fundamentals</div>
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- DATA TYPES -->
+<div class="card amber">
+  <h2>Data Types</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <table>
+        <tr><th>Type</th><th>Size</th><th>Example</th></tr>
+        <tr><td>int</td><td>32-bit</td><td><code>int i = 1000;</code></td></tr>
+        <tr><td>double</td><td>~15 dig</td><td><code>double d = 3.14;</code></td></tr>
+        <tr><td>string</td><td>ref type</td><td><code>string s = "hi";</code></td></tr>
+        <tr><td>bool</td><td>true/false</td><td><code>bool flag = true;</code></td></tr>
+        <tr><td>char</td><td>Unicode 16-bit</td><td><code>char c = 'A';</code></td></tr>
+        <tr><td>decimal</td><td>~29 dig</td><td><code>decimal m = 9.99m;</code></td></tr>
+        <tr><td>var</td><td>inferred</td><td><code>var x = 42;</code></td></tr>
+      </table>
+      <div class="tip">Value types → stack (copy). Reference types → heap (reference).</div>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other / Less Common</div>
+      <table>
+        <tr><th>Type</th><th>Size</th><th>Example</th></tr>
+        <tr><td>sbyte/byte</td><td>8-bit ±</td><td><code>byte b = 200;</code></td></tr>
+        <tr><td>short/ushort</td><td>16-bit</td><td><code>short s = -300;</code></td></tr>
+        <tr><td>uint</td><td>32-bit unsigned</td><td><code>uint u = 1000u;</code></td></tr>
+        <tr><td>long/ulong</td><td>64-bit</td><td><code>long l = 50000L;</code></td></tr>
+        <tr><td>float</td><td>~7 dig</td><td><code>float f = 3.14f;</code></td></tr>
+        <tr><td>object</td><td>any type</td><td><code>object o = 10;</code></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- CONTROL FLOW -->
+<div class="card green">
+  <h2>Control Flow</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <pre><span class="c">// if / else if / else</span>
+<span class="k">if</span>(n > 0) { ... }
+<span class="k">else if</span>(n == 0) { ... }
+<span class="k">else</span> { ... }
+
+<span class="c">// Ternary</span>
+<span class="k">string</span> r = n > 0 ? <span class="s">"pos"</span> : <span class="s">"neg"</span>;
+
+<span class="c">// foreach — most common loop</span>
+<span class="k">foreach</span>(<span class="k">int</span> x <span class="k">in</span> arr) Console.<span class="m">WriteLine</span>(x);
+
+<span class="c">// for loop</span>
+<span class="k">for</span>(<span class="k">int</span> i = 0; i &lt; n; i++) { ... }</pre>
+      <table>
+        <tr><th>Loop</th><th>Use When</th></tr>
+        <tr><td>for</td><td>Known iteration count</td></tr>
+        <tr><td>foreach</td><td>Iterate collections</td></tr>
+        <tr><td>while</td><td>Unknown count, test first</td></tr>
+      </table>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other / Less Common</div>
+      <pre><span class="c">// switch expression (C# 8+)</span>
+<span class="k">string</span> grade = score <span class="k">switch</span> {
+  >= 90 => <span class="s">"A"</span>,
+  >= 75 => <span class="s">"B"</span>,
+  _ => <span class="s">"F"</span>
+};
+
+<span class="c">// do-while (runs at least once)</span>
+<span class="k">do</span> { ... } <span class="k">while</span>(cond);
+
+<span class="c">// break / continue / return</span></pre>
+      <table>
+        <tr><th>Keyword</th><th>Purpose</th></tr>
+        <tr><td>break</td><td>Exit loop/switch immediately</td></tr>
+        <tr><td>continue</td><td>Skip to next iteration</td></tr>
+        <tr><td>return</td><td>Exit method</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- BOXING / NULLABLE / REF OUT -->
+<div class="card">
+  <h2>Boxing, ref / out &amp; Nullable</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <pre><span class="c">// Nullable value type</span>
+<span class="k">int</span>? age = <span class="k">null</span>;
+<span class="k">if</span>(age.<span class="m">HasValue</span>) Console.<span class="m">WriteLine</span>(age.Value);
+<span class="k">int</span> safe = age ?? 0; <span class="c">// null-coalescing</span>
+age ??= 18;           <span class="c">// assign if null</span>
+
+<span class="c">// out: method MUST assign (very common)</span>
+<span class="k">void</span> <span class="m">Get</span>(<span class="k">out int</span> x) { x = 20; }
+<span class="m">Get</span>(<span class="k">out</span> n);</pre>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other / Less Common</div>
+      <pre><span class="c">// ref: init before pass, bidirectional</span>
+<span class="k">void</span> <span class="m">Add</span>(<span class="k">ref int</span> x) { x += 10; }
+<span class="m">Add</span>(<span class="k">ref</span> n);  <span class="c">// n is modified</span>
+
+<span class="c">// Boxing: value → object (heap)</span>
+<span class="k">int</span> a = 10;
+<span class="t">object</span> obj = a;   <span class="c">// implicit box</span>
+<span class="k">int</span> b = (<span class="k">int</span>)obj;  <span class="c">// explicit unbox</span></pre>
+      <div class="tip red">Avoid boxing in loops — heap alloc + GC cost. Type must match exactly or <code>InvalidCastException</code>.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<div class="chapter-header">► String, char &amp; StringBuilder</div>
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- STRING METHODS -->
+<div class="card">
+  <h2>String Methods (immutable)</h2>
+  <div class="split3">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <table>
+        <tr><th>Method</th><th>Example → Output</th></tr>
+        <tr><td>s.Length</td><td><code>"Hello".Length → 5</code></td></tr>
+        <tr><td>s.Contains(v)</td><td><code>s.Contains("hi") → bool</code></td></tr>
+        <tr><td>s.ToUpper()</td><td><code>"hi".ToUpper() → "HI"</code></td></tr>
+        <tr><td>s.ToLower()</td><td><code>"Hi".ToLower() → "hi"</code></td></tr>
+        <tr><td>s.Trim()</td><td><code>" hi ".Trim() → "hi"</code></td></tr>
+        <tr><td>s.Replace(old,new)</td><td><code>"cat".Replace("c","b")</code></td></tr>
+        <tr><td>s.Split(sep)</td><td><code>"a b".Split(' ') → ["a","b"]</code></td></tr>
+        <tr><td>string.Join(sep,arr)</td><td><code>Join(",",arr) → "a,b"</code></td></tr>
+        <tr><td>s.StartsWith(v)</td><td>prefix check</td></tr>
+        <tr><td>s.EndsWith(v)</td><td>suffix check</td></tr>
+        <tr><td>s.IndexOf(v)</td><td><code>"Hello".IndexOf('l') → 2</code></td></tr>
+        <tr><td>$"{var}"</td><td>string interpolation</td></tr>
+        <tr><td>string.IsNullOrEmpty(s)</td><td>null or "" check</td></tr>
+        <tr><td>string.IsNullOrWhiteSpace(s)</td><td>null/spaces check</td></tr>
+      </table>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other Methods</div>
+      <table>
+        <tr><th>Method</th><th>Example → Output</th></tr>
+        <tr><td>s.Substring(i)</td><td><code>"Hello".Substring(2) → "llo"</code></td></tr>
+        <tr><td>s.Substring(i,n)</td><td><code>"Hello".Substring(1,3) → "ell"</code></td></tr>
+        <tr><td>s.Remove(start)</td><td><code>"Hello".Remove(3) → "Hel"</code></td></tr>
+        <tr><td>s.Remove(start,n)</td><td><code>"Hello".Remove(1,2) → "Hlo"</code></td></tr>
+        <tr><td>s.Insert(i,val)</td><td><code>"Hllo".Insert(1,"e")</code></td></tr>
+        <tr><td>s.LastIndexOf(v)</td><td><code>"Hello".LastIndexOf('l') → 3</code></td></tr>
+        <tr><td>s.Equals(s2, SC)</td><td>with OrdinalIgnoreCase</td></tr>
+        <tr><td>String.Compare(s1,s2)</td><td>0=equal &lt;0 &gt;0</td></tr>
+        <tr><td>string.Concat(s1,s2)</td><td>joins two strings</td></tr>
+        <tr><td>s.ToCharArray()</td><td>converts to char[]</td></tr>
+        <tr><td>string.Format(fmt,a)</td><td><code>string.Format("{0}!",s)</code></td></tr>
+        <tr><td>s.TrimStart()</td><td>remove leading spaces</td></tr>
+        <tr><td>s.TrimEnd()</td><td>remove trailing spaces</td></tr>
+        <tr><td>string.Copy(s)</td><td>creates new copy</td></tr>
+      </table>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Verbatim &amp; Reverse</div>
+      <pre><span class="c">// verbatim string (no escaping)</span>
+<span class="k">string</span> path = <span class="s">@"C:\Folder\File.txt"</span>;
+
+<span class="c">// reverse a string</span>
+<span class="k">new</span> <span class="t">string</span>(input.<span class="m">Reverse</span>().<span class="m">ToArray</span>());
+
+<span class="c">// Compare ordinal</span>
+<span class="t">String</span>.<span class="m">CompareOrdinal</span>(s1, s2);
+
+<span class="c">// Intern pool</span>
+<span class="t">string</span>.<span class="m">Intern</span>(s);</pre>
+      <div class="section-label">Format Specifiers</div>
+      <table>
+        <tr><th>Format</th><th>Example → Output</th></tr>
+        <tr><td>F2</td><td><code>1234.5678.ToString("F2") → "1234.57"</code></td></tr>
+        <tr><td>N</td><td><code>1234567.ToString("N") → "1,234,567.00"</code></td></tr>
+        <tr><td>C</td><td><code>9.99.ToString("C") → "₹9.99"</code></td></tr>
+        <tr><td>P1</td><td><code>0.256.ToString("P1") → "25.6 %"</code></td></tr>
+        <tr><td>X4</td><td><code>255.ToString("X4") → "00FF"</code></td></tr>
+        <tr><td>D3</td><td><code>5.ToString("D3") → "005"</code></td></tr>
+        <tr><td>E2</td><td><code>12345.ToString("E2") → "1.23E+004"</code></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- STRINGBUILDER -->
+<div class="card">
+  <h2>StringBuilder (mutable, fast)</h2>
+  <pre style="margin-bottom:10px"><span class="k">using</span> System.Text;
+<span class="t">StringBuilder</span> sb = <span class="k">new</span> <span class="t">StringBuilder</span>(<span class="s">"Hello"</span>);</pre>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <table>
+        <tr><th>Method</th><th>Example</th></tr>
+        <tr><td>sb.Append(v)</td><td><code>sb.Append(" World")</code></td></tr>
+        <tr><td>sb.AppendLine(v)</td><td>adds text + newline</td></tr>
+        <tr><td>sb.ToString()</td><td>convert to string</td></tr>
+        <tr><td>sb.Replace(old,new)</td><td><code>sb.Replace("Hello","Hi")</code></td></tr>
+        <tr><td>sb.Clear()</td><td>empties content</td></tr>
+        <tr><td>sb.Length</td><td>current char count</td></tr>
+      </table>
+      <div class="tip">String is immutable — use StringBuilder for 10+ concatenations in loops.</div>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other Methods</div>
+      <table>
+        <tr><th>Method</th><th>Example</th></tr>
+        <tr><td>sb.AppendFormat(fmt,a)</td><td><code>sb.AppendFormat("{0}!","Hi")</code></td></tr>
+        <tr><td>sb.Insert(i,v)</td><td><code>sb.Insert(0,"Say: ")</code></td></tr>
+        <tr><td>sb.Remove(i,n)</td><td><code>sb.Remove(0,3)</code></td></tr>
+        <tr><td>sb.Capacity</td><td>allocated size</td></tr>
+        <tr><td>sb.EnsureCapacity(n)</td><td>guarantees capacity</td></tr>
+        <tr><td>sb[i]</td><td>get/set char at index</td></tr>
+        <tr><td>sb.CopyTo(si,dst,di,n)</td><td>copies chars to char[]</td></tr>
+        <tr><td>sb.Equals(otherSb)</td><td>compares two builders</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- CHAR METHODS -->
+<div class="card">
+  <h2>char Methods</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <table>
+        <tr><th>Method</th><th>Returns true when</th></tr>
+        <tr><td>char.IsLetter(c)</td><td>A–Z or a–z</td></tr>
+        <tr><td>char.IsDigit(c)</td><td>0–9</td></tr>
+        <tr><td>char.IsLower(c)</td><td>lowercase letter</td></tr>
+        <tr><td>char.IsUpper(c)</td><td>uppercase letter</td></tr>
+        <tr><td>char.IsWhiteSpace(c)</td><td>space, tab, newline</td></tr>
+        <tr><td>char.ToUpper(c)</td><td><code>'a' → 'A'</code></td></tr>
+        <tr><td>char.ToLower(c)</td><td><code>'A' → 'a'</code></td></tr>
+        <tr><td>(int)c</td><td><code>'A' → 65</code> (ASCII)</td></tr>
+      </table>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other Methods</div>
+      <table>
+        <tr><th>Method</th><th>Example → Output</th></tr>
+        <tr><td>char.IsLetterOrDigit(c)</td><td>letter or digit</td></tr>
+        <tr><td>char.IsPunctuation(c)</td><td>! , . ? etc.</td></tr>
+        <tr><td>char.IsSymbol(c)</td><td>$ % &amp; etc.</td></tr>
+        <tr><td>char.IsControl(c)</td><td>control chars</td></tr>
+        <tr><td>char.IsNumber(c)</td><td>numeric Unicode char</td></tr>
+        <tr><td>char.GetNumericValue(c)</td><td><code>'7' → 7.0</code></td></tr>
+        <tr><td>char.ToUpper(c,culture)</td><td>uppercase with culture</td></tr>
+        <tr><td>c.ToString()</td><td>char to string</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<div class="chapter-header">► Arrays &amp; Parse / Convert</div>
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ARRAYS -->
+<div class="card">
+  <h2>Arrays</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <pre><span class="c">// 1D declaration</span>
+<span class="k">int</span>[] a = <span class="k">new int</span>[5];
+<span class="k">int</span>[] b = {1, 2, 3, 4, 5};
+
+<span class="c">// 2D rectangular</span>
+<span class="k">int</span>[,] m = <span class="k">new int</span>[2,3];
+m[0,1] = 10;
+m.<span class="m">GetLength</span>(0); <span class="c">// rows → 2</span>
+m.<span class="m">GetLength</span>(1); <span class="c">// cols → 3</span></pre>
+      <table>
+        <tr><th>Method</th><th>Usage</th></tr>
+        <tr><td>Array.Sort(a)</td><td>sort ascending in-place</td></tr>
+        <tr><td>Array.Reverse(a)</td><td>reverse in-place</td></tr>
+        <tr><td>Array.IndexOf(a,v)</td><td>first index of value</td></tr>
+        <tr><td>Array.Copy(src,dst,n)</td><td>copy n elements</td></tr>
+        <tr><td>Array.Find(a,pred)</td><td>first match</td></tr>
+        <tr><td>Array.Exists(a,pred)</td><td>any match → bool</td></tr>
+        <tr><td>arr.Length</td><td>total element count</td></tr>
+        <tr><td>string.Join(",",arr)</td><td>array → string</td></tr>
+      </table>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other Methods</div>
+      <pre><span class="c">// Jagged array (array of arrays)</span>
+<span class="k">int</span>[][] j = <span class="k">new int</span>[3][];
+j[0] = <span class="k">new int</span>[] {1, 2};
+j[1] = <span class="k">new int</span>[] {3, 4, 5};
+j.Length;    <span class="c">// 3 (rows)</span>
+j[1].Length; <span class="c">// 3 (row1 cols)</span></pre>
+      <table>
+        <tr><th>Method</th><th>Usage</th></tr>
+        <tr><td>Array.FindAll(a,pred)</td><td>all matches</td></tr>
+        <tr><td>Array.BinarySearch(a,v)</td><td>sorted array only!</td></tr>
+        <tr><td>Array.Clear(a,i,n)</td><td>set elements to default</td></tr>
+        <tr><td>Array.Resize(ref a,n)</td><td>resize (creates new)</td></tr>
+        <tr><td>Array.ForEach(a,action)</td><td>run action on each</td></tr>
+        <tr><td>Array.Clone()</td><td>shallow copy</td></tr>
+        <tr><td>Array.TrueForAll(a,pred)</td><td>all match → bool</td></tr>
+        <tr><td>Array.ConvertAll(a,conv)</td><td>convert element type</td></tr>
+        <tr><td>arr.GetUpperBound(dim)</td><td>last index of dimension</td></tr>
+      </table>
+      <div class="tip">Use <code>GetLength(1)</code> for 2D cols, NOT <code>arr.Length</code>!</div>
+    </div>
+  </div>
+</div>
+
+<!-- PARSE / CONVERT -->
+<div class="card">
+  <h2>Parse / TryParse / Convert</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <table>
+        <tr><th>Method</th><th>Throws?</th><th>Example</th></tr>
+        <tr><td>int.Parse(s)</td><td>Yes</td><td><code>int.Parse("123") → 123</code></td></tr>
+        <tr><td>int.TryParse(s,out v)</td><td>No (bool)</td><td><code>TryParse("x",out v) → false</code></td></tr>
+        <tr><td>double.TryParse(s,out x)</td><td>No</td><td>safe double parse</td></tr>
+        <tr><td>DateTime.TryParse(s,out dt)</td><td>No</td><td>safe date parse</td></tr>
+        <tr><td>Convert.ToInt32(v)</td><td>No</td><td>null → 0</td></tr>
+        <tr><td>Convert.ToString(v)</td><td>No</td><td>null-safe</td></tr>
+      </table>
+      <pre><span class="c">// is: type check + pattern match</span>
+<span class="k">if</span>(obj <span class="k">is string</span> s) Console.<span class="m">WriteLine</span>(s.Length);
+
+<span class="c">// as: safe cast, null on fail</span>
+<span class="t">string</span> t = obj <span class="k">as string</span>; <span class="c">// null if not string</span></pre>
+      <div class="tip blue">TryParse → always safe, use for user input. Parse → throws on bad format.</div>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other Conversions</div>
+      <table>
+        <tr><th>Method</th><th>Note</th></tr>
+        <tr><td>double.Parse(s)</td><td>string to double</td></tr>
+        <tr><td>float.Parse(s)</td><td>string to float</td></tr>
+        <tr><td>decimal.Parse(s)</td><td>string to decimal</td></tr>
+        <tr><td>bool.Parse(s)</td><td><code>bool.Parse("true")</code></td></tr>
+        <tr><td>char.Parse(s)</td><td>string to char</td></tr>
+        <tr><td>DateTime.Parse(s)</td><td>string to DateTime</td></tr>
+        <tr><td>Enum.TryParse&lt;T&gt;</td><td><code>Enum.TryParse("Gold",out e)</code></td></tr>
+        <tr><td>Convert.ToInt32(s,base)</td><td><code>Convert.ToInt32("FF",16)→255</code></td></tr>
+        <tr><td>Convert.ToString(n,base)</td><td><code>Convert.ToString(10,2)→"1010"</code></td></tr>
+        <tr><td>Convert.ToDouble(v)</td><td>rounds 12.7 → 13</td></tr>
+        <tr><td>Convert.ToBoolean(v)</td><td>to bool</td></tr>
+        <tr><td>Convert.ToDateTime(v)</td><td>to DateTime</td></tr>
+      </table>
+      <pre><span class="c">// Explicit cast (truncates)</span>
+<span class="k">double</span> d = 9.7;
+<span class="k">int</span> i = (<span class="k">int</span>)d;   <span class="c">// → 9</span>
+<span class="k">double</span> d2 = i;    <span class="c">// implicit widening</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<div class="chapter-header">► Collections</div>
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ARRAYLIST -->
+<div class="card">
+  <h2>ArrayList (non-generic)</h2>
+  <pre style="margin-bottom:10px"><span class="k">using</span> System.Collections;
+<span class="t">ArrayList</span> arr = <span class="k">new</span> <span class="t">ArrayList</span>();</pre>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <table>
+        <tr><th>Method</th><th>Purpose</th></tr>
+        <tr><td>arr.Add(obj)</td><td>add at end</td></tr>
+        <tr><td>arr.AddRange(col)</td><td>add multiple items</td></tr>
+        <tr><td>arr.Remove(obj)</td><td>first matching item</td></tr>
+        <tr><td>arr.RemoveAt(i)</td><td>at specific index</td></tr>
+        <tr><td>arr.Clear()</td><td>remove all</td></tr>
+        <tr><td>arr.Contains(obj)</td><td>bool — item exists</td></tr>
+        <tr><td>arr.IndexOf(obj)</td><td>first index</td></tr>
+        <tr><td>arr.Sort()</td><td>sort all items</td></tr>
+        <tr><td>arr.Count</td><td>number of items</td></tr>
+        <tr><td>arr[index]</td><td>get/set by index</td></tr>
+      </table>
+      <div class="tip red">ArrayList stores object → requires casting. Prefer <code>List&lt;T&gt;</code> for type safety.</div>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other Methods</div>
+      <table>
+        <tr><th>Method</th><th>Purpose</th></tr>
+        <tr><td>arr.Insert(i,obj)</td><td>insert at index</td></tr>
+        <tr><td>arr.InsertRange(i,col)</td><td>insert collection at index</td></tr>
+        <tr><td>arr.RemoveRange(i,n)</td><td>n items from index</td></tr>
+        <tr><td>arr.LastIndexOf(obj)</td><td>last index</td></tr>
+        <tr><td>arr.BinarySearch(obj)</td><td>sorted only!</td></tr>
+        <tr><td>arr.Sort(comparer)</td><td>sort with comparer</td></tr>
+        <tr><td>arr.Reverse()</td><td>reverse all</td></tr>
+        <tr><td>arr.Reverse(i,n)</td><td>reverse a range</td></tr>
+        <tr><td>arr.CopyTo(array)</td><td>copy to array</td></tr>
+        <tr><td>arr.ToArray()</td><td>to object[]</td></tr>
+        <tr><td>arr.GetRange(i,n)</td><td>sub-ArrayList</td></tr>
+        <tr><td>arr.Clone()</td><td>shallow copy</td></tr>
+        <tr><td>arr.Capacity</td><td>internal size</td></tr>
+        <tr><td>arr.TrimToSize()</td><td>capacity = count</td></tr>
+        <tr><td>ArrayList.ReadOnly(arr)</td><td>read-only wrapper</td></tr>
+        <tr><td>ArrayList.Synchronized(a)</td><td>thread-safe wrapper</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- LIST<T> -->
+<div class="card">
+  <h2>List&lt;T&gt; (generic, preferred)</h2>
+  <pre style="margin-bottom:10px"><span class="k">using</span> System.Collections.Generic;
+<span class="t">List</span>&lt;<span class="k">int</span>&gt; list = <span class="k">new</span> <span class="t">List</span>&lt;<span class="k">int</span>&gt;();</pre>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <table>
+        <tr><th>Method</th><th>Purpose</th></tr>
+        <tr><td>list.Add(item)</td><td>add at end</td></tr>
+        <tr><td>list.AddRange(col)</td><td>add multiple</td></tr>
+        <tr><td>list.Remove(item)</td><td>first match</td></tr>
+        <tr><td>list.RemoveAt(i)</td><td>at index</td></tr>
+        <tr><td>list.RemoveAll(pred)</td><td>removes by condition</td></tr>
+        <tr><td>list.Clear()</td><td>remove all</td></tr>
+        <tr><td>list.Contains(item)</td><td>bool exists</td></tr>
+        <tr><td>list.Find(pred)</td><td>first matching item</td></tr>
+        <tr><td>list.FindAll(pred)</td><td>all matching items</td></tr>
+        <tr><td>list.Sort()</td><td>sort items</td></tr>
+        <tr><td>list.Count</td><td>number of items</td></tr>
+        <tr><td>list.ToArray()</td><td>convert to T[]</td></tr>
+        <tr><td>list[index]</td><td>get/set by index</td></tr>
+      </table>
+      <pre>list.<span class="m">Sort</span>((a,b) => a.Age.<span class="m">CompareTo</span>(b.Age));
+list.<span class="m">RemoveAll</span>(x => x.Age == 18);
+list.<span class="m">FindAll</span>(x => x > 5);</pre>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other Methods</div>
+      <table>
+        <tr><th>Method</th><th>Purpose</th></tr>
+        <tr><td>list.Insert(i,item)</td><td>at position</td></tr>
+        <tr><td>list.InsertRange(i,col)</td><td>multiple at position</td></tr>
+        <tr><td>list.RemoveRange(i,n)</td><td>n items from index</td></tr>
+        <tr><td>list.IndexOf(item)</td><td>first index</td></tr>
+        <tr><td>list.LastIndexOf(item)</td><td>last index</td></tr>
+        <tr><td>list.FindIndex(pred)</td><td>index of first match</td></tr>
+        <tr><td>list.Exists(pred)</td><td>any match → bool</td></tr>
+        <tr><td>list.TrueForAll(pred)</td><td>all match → bool</td></tr>
+        <tr><td>list.BinarySearch(item)</td><td>sorted list only!</td></tr>
+        <tr><td>list.Sort(comparer)</td><td>with IComparer</td></tr>
+        <tr><td>list.Reverse()</td><td>reverse all</td></tr>
+        <tr><td>list.GetRange(i,n)</td><td>returns sub-list</td></tr>
+        <tr><td>list.ForEach(action)</td><td>run action on each</td></tr>
+        <tr><td>list.CopyTo(array)</td><td>copy to T[]</td></tr>
+        <tr><td>list.Capacity</td><td>internal size</td></tr>
+        <tr><td>list.TrimExcess()</td><td>reduce capacity to count</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- DICTIONARY -->
+<div class="card">
+  <h2>Dictionary&lt;TKey, TValue&gt;</h2>
+  <pre style="margin-bottom:10px"><span class="t">Dictionary</span>&lt;<span class="k">int</span>, <span class="k">string</span>&gt; d = <span class="k">new</span>();
+d.<span class="m">Add</span>(1, <span class="s">"Alice"</span>);
+d[2] = <span class="s">"Bob"</span>; <span class="c">// add or update</span></pre>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <table>
+        <tr><th>Method / Property</th><th>Purpose</th></tr>
+        <tr><td>dict.Add(key,val)</td><td>add key-value pair</td></tr>
+        <tr><td>dict[key] = val</td><td>add or update value</td></tr>
+        <tr><td>dict.Remove(key)</td><td>remove by key</td></tr>
+        <tr><td>dict.ContainsKey(key)</td><td>key exists → bool</td></tr>
+        <tr><td>dict.TryGetValue(k,out v)</td><td>safe get (no exception)</td></tr>
+        <tr><td>dict.Count</td><td>number of pairs</td></tr>
+        <tr><td>dict.Keys</td><td>all keys collection</td></tr>
+        <tr><td>dict.Values</td><td>all values collection</td></tr>
+        <tr><td>dict.Clear()</td><td>remove all pairs</td></tr>
+      </table>
+      <pre><span class="c">// Safe access pattern</span>
+<span class="k">if</span>(d.<span class="m">TryGetValue</span>(1, <span class="k">out string</span> name))
+  Console.<span class="m">WriteLine</span>(name);
+
+<span class="c">// Iterate key-value pairs</span>
+<span class="k">foreach</span>(<span class="k">var</span> kv <span class="k">in</span> d)
+  Console.<span class="m">WriteLine</span>($<span class="s">"{kv.Key}: {kv.Value}"</span>);</pre>
+      <div class="tip">Keys must be unique. O(1) lookup. Use TryGetValue to avoid KeyNotFoundException.</div>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other Methods</div>
+      <table>
+        <tr><th>Method / Property</th><th>Purpose</th></tr>
+        <tr><td>dict.ContainsValue(val)</td><td>value exists → bool</td></tr>
+        <tr><td>dict[key]</td><td>get/set value by key</td></tr>
+        <tr><td>dict.GetEnumerator()</td><td>enumerator</td></tr>
+        <tr><td>dict.Equals(obj)</td><td>compare dictionaries</td></tr>
+        <tr><td>dict.GetHashCode()</td><td>hash code</td></tr>
+      </table>
+      <pre><span class="c">// Iterate only keys or values</span>
+<span class="k">foreach</span>(<span class="k">var</span> k <span class="k">in</span> d.Keys) { }
+<span class="k">foreach</span>(<span class="k">var</span> v <span class="k">in</span> d.Values) { }
+
+<span class="c">// Get key by value (LINQ)</span>
+d.<span class="m">FirstOrDefault</span>(x => x.Value == <span class="s">"Bob"</span>).Key;</pre>
+      <div class="section-label">Related Types</div>
+      <div class="row">
+        <span class="pill purple">SortedDictionary — auto-sorted keys</span>
+        <span class="pill amber">SortedList — sorted, array-backed</span>
+        <span class="pill green">HashSet — unique items only</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STACK & QUEUE -->
+<div class="card">
+  <h2>Stack&lt;T&gt; (LIFO) &amp; Queue&lt;T&gt; (FIFO)</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Stack — Most Used</div>
+      <pre><span class="t">Stack</span>&lt;<span class="k">int</span>&gt; stack = <span class="k">new</span>();
+stack.<span class="m">Push</span>(10); stack.<span class="m">Push</span>(20);
+Console.<span class="m">WriteLine</span>(stack.<span class="m">Peek</span>()); <span class="c">// 20</span>
+stack.<span class="m">Pop</span>(); <span class="c">// removes &amp; returns 20</span></pre>
+      <table>
+        <tr><th>Method / Prop</th><th>Purpose</th></tr>
+        <tr><td>stack.Push(item)</td><td>add to top</td></tr>
+        <tr><td>stack.Pop()</td><td>remove &amp; return top</td></tr>
+        <tr><td>stack.Peek()</td><td>read top (no remove)</td></tr>
+        <tr><td>stack.Count</td><td>number of items</td></tr>
+        <tr><td>stack.Clear()</td><td>remove all</td></tr>
+        <tr><td>stack.Contains(item)</td><td>item exists</td></tr>
+      </table>
+      <div class="row"><span class="pill blue">Uses: undo/redo, recursion, parsing, backtracking</span></div>
+      <div class="section-label" style="margin-top:8px">Stack — Other</div>
+      <table>
+        <tr><td>stack.ToArray()</td><td>to T[] (top first)</td></tr>
+        <tr><td>stack.CopyTo(arr,i)</td><td>copy to array</td></tr>
+        <tr><td>foreach x in stack</td><td>top to bottom</td></tr>
+      </table>
+    </div>
+    <div class="pane">
+      <div class="pane-label hot">Queue — Most Used</div>
+      <pre><span class="t">Queue</span>&lt;<span class="k">string</span>&gt; q = <span class="k">new</span>();
+q.<span class="m">Enqueue</span>(<span class="s">"A"</span>); q.<span class="m">Enqueue</span>(<span class="s">"B"</span>);
+Console.<span class="m">WriteLine</span>(q.<span class="m">Peek</span>()); <span class="c">// "A"</span>
+q.<span class="m">Dequeue</span>(); <span class="c">// removes &amp; returns "A"</span></pre>
+      <table>
+        <tr><th>Method / Prop</th><th>Purpose</th></tr>
+        <tr><td>queue.Enqueue(item)</td><td>add to rear</td></tr>
+        <tr><td>queue.Dequeue()</td><td>remove &amp; return front</td></tr>
+        <tr><td>queue.Peek()</td><td>read front (no remove)</td></tr>
+        <tr><td>queue.Count</td><td>number of items</td></tr>
+        <tr><td>queue.Clear()</td><td>remove all</td></tr>
+        <tr><td>queue.Contains(item)</td><td>item exists</td></tr>
+      </table>
+      <div class="row"><span class="pill green">Uses: task scheduling, print queue, BFS, buffering</span></div>
+      <div class="section-label" style="margin-top:8px">Queue — Other</div>
+      <table>
+        <tr><td>queue.ToArray()</td><td>to T[] (front first)</td></tr>
+        <tr><td>queue.CopyTo(arr,i)</td><td>copy to array</td></tr>
+        <tr><td>foreach x in queue</td><td>front to back</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<div class="chapter-header">► Math, Random &amp; DateTime</div>
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- MATH -->
+<div class="card">
+  <h2>Math Class &amp; Random</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Math — Most Used</div>
+      <table>
+        <tr><th>Method</th><th>Returns</th></tr>
+        <tr><td>Math.Abs(x)</td><td>absolute value</td></tr>
+        <tr><td>Math.Max(a,b)</td><td>larger value</td></tr>
+        <tr><td>Math.Min(a,b)</td><td>smaller value</td></tr>
+        <tr><td>Math.Pow(x,y)</td><td>x^y (returns double)</td></tr>
+        <tr><td>Math.Sqrt(x)</td><td>square root</td></tr>
+        <tr><td>Math.Round(x,n)</td><td>n decimal places</td></tr>
+        <tr><td>Math.Floor(x)</td><td>round down</td></tr>
+        <tr><td>Math.Ceiling(x)</td><td>round up</td></tr>
+        <tr><td>Math.Clamp(v,min,max)</td><td>limit to range</td></tr>
+        <tr><td>Math.PI</td><td>3.14159…</td></tr>
+        <tr><td>Random.Next(min,max)</td><td>int min to max-1</td></tr>
+        <tr><td>Random.NextDouble()</td><td>double 0.0 to &lt;1.0</td></tr>
+      </table>
+      <pre><span class="c">// Dice roll (1–6)</span>
+<span class="t">Random</span> rnd = <span class="k">new</span>(); <span class="c">// reuse!</span>
+<span class="k">int</span> dice = rnd.<span class="m">Next</span>(1, 7);</pre>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Math — Other Methods</div>
+      <table>
+        <tr><th>Method</th><th>Returns</th></tr>
+        <tr><td>Math.Sign(x)</td><td>-1, 0, or 1</td></tr>
+        <tr><td>Math.Truncate(x)</td><td>remove decimals → 0</td></tr>
+        <tr><td>Math.Log(x)</td><td>natural log (ln)</td></tr>
+        <tr><td>Math.Log10(x)</td><td>log base 10</td></tr>
+        <tr><td>Math.Log(x,base)</td><td>log with custom base</td></tr>
+        <tr><td>Math.Exp(x)</td><td>e^x</td></tr>
+        <tr><td>Math.Cbrt(x)</td><td>cube root</td></tr>
+        <tr><td>Math.Sin/Cos/Tan(x)</td><td>trig (radians)</td></tr>
+        <tr><td>Math.Asin/Acos/Atan(x)</td><td>inverse trig</td></tr>
+        <tr><td>Math.Atan2(y,x)</td><td>angle from coords</td></tr>
+        <tr><td>Math.DivRem(a,b,out r)</td><td>quotient + remainder</td></tr>
+        <tr><td>Math.CopySign(x,y)</td><td>x with sign of y</td></tr>
+        <tr><td>Math.E</td><td>2.71828…</td></tr>
+        <tr><td>Math.Tau</td><td>2π = 6.283…</td></tr>
+      </table>
+      <div class="section-label">Random — Other</div>
+      <table>
+        <tr><td>rnd.Next()</td><td>int ≥ 0</td></tr>
+        <tr><td>rnd.Next(max)</td><td>int 0 to max-1</td></tr>
+        <tr><td>rnd.NextBytes(byte[])</td><td>fills array with random bytes</td></tr>
+        <tr><td>rnd.NextInt64()</td><td>long ≥ 0 (.NET 6+)</td></tr>
+      </table>
+      <div class="tip">Trig uses radians. Convert: <code>deg * Math.PI / 180</code>. Create Random once and reuse.</div>
+    </div>
+  </div>
+</div>
+
+<!-- DATETIME -->
+<div class="card">
+  <h2>DateTime &amp; TimeSpan</h2>
+  <div class="split3">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <table>
+        <tr><th>Method / Prop</th><th>Purpose</th></tr>
+        <tr><td>DateTime.Now</td><td>current local date &amp; time</td></tr>
+        <tr><td>DateTime.Today</td><td>today at 00:00:00</td></tr>
+        <tr><td>new DateTime(y,m,d)</td><td>create a date</td></tr>
+        <tr><td>dt.AddDays(n)</td><td>new DateTime</td></tr>
+        <tr><td>dt.AddMonths(n)</td><td>new DateTime</td></tr>
+        <tr><td>dt.AddYears(n)</td><td>new DateTime</td></tr>
+        <tr><td>dt1 - dt2</td><td>TimeSpan</td></tr>
+        <tr><td>dt.Year / Month / Day</td><td>int</td></tr>
+        <tr><td>dt.DayOfWeek</td><td>DayOfWeek enum</td></tr>
+        <tr><td>dt.ToString("yyyy-MM-dd")</td><td>format as string</td></tr>
+        <tr><td>DateTime.Parse(s)</td><td>string → DateTime</td></tr>
+        <tr><td>DateTime.TryParse(s,out dt)</td><td>safe parse</td></tr>
+      </table>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other DateTime Methods</div>
+      <table>
+        <tr><th>Method / Prop</th><th>Purpose</th></tr>
+        <tr><td>DateTime.UtcNow</td><td>current UTC time</td></tr>
+        <tr><td>new DateTime(y,m,d,h,min,s)</td><td>create date-time</td></tr>
+        <tr><td>DateTime.MinValue</td><td>smallest date</td></tr>
+        <tr><td>DateTime.MaxValue</td><td>largest date</td></tr>
+        <tr><td>dt.AddHours(n)</td><td>new DateTime</td></tr>
+        <tr><td>dt.AddMinutes(n)</td><td>new DateTime</td></tr>
+        <tr><td>dt.AddSeconds(n)</td><td>new DateTime</td></tr>
+        <tr><td>dt.AddMilliseconds(n)</td><td>new DateTime</td></tr>
+        <tr><td>dt.Hour / Minute / Second</td><td>int</td></tr>
+        <tr><td>dt.DayOfYear</td><td>int (1–366)</td></tr>
+        <tr><td>dt.TimeOfDay</td><td>TimeSpan</td></tr>
+        <tr><td>dt.Ticks</td><td>100-ns units</td></tr>
+        <tr><td>DateTime.IsLeapYear(y)</td><td>bool</td></tr>
+        <tr><td>DateTime.DaysInMonth(y,m)</td><td>int</td></tr>
+      </table>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">TimeSpan &amp; Formats</div>
+      <table>
+        <tr><th>Property</th><th>Purpose</th></tr>
+        <tr><td>ts.Days</td><td>whole days</td></tr>
+        <tr><td>ts.Hours</td><td>hours component</td></tr>
+        <tr><td>ts.Minutes</td><td>minutes component</td></tr>
+        <tr><td>ts.TotalDays</td><td>total as double</td></tr>
+        <tr><td>ts.TotalHours</td><td>total hours</td></tr>
+        <tr><td>ts.TotalMinutes</td><td>total minutes</td></tr>
+        <tr><td>ts.TotalSeconds</td><td>total seconds</td></tr>
+        <tr><td>TimeSpan.FromDays(n)</td><td>create from days</td></tr>
+        <tr><td>TimeSpan.FromHours(n)</td><td>create from hours</td></tr>
+      </table>
+      <div class="section-label">Common Date Formats</div>
+      <table>
+        <tr><th>Format</th><th>Output</th></tr>
+        <tr><td>dd/MM/yyyy</td><td>25/12/2024</td></tr>
+        <tr><td>yyyy-MM-dd</td><td>2024-12-25</td></tr>
+        <tr><td>dd MMM yyyy</td><td>25 Dec 2024</td></tr>
+        <tr><td>hh:mm:ss tt</td><td>02:30:00 PM</td></tr>
+        <tr><td>ddd, dd MMM yyyy</td><td>Wed, 25 Dec 2024</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<div class="chapter-header">► OOP &amp; Design</div>
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- CLASSES OOP -->
+<div class="card">
+  <h2>Classes &amp; OOP</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used Concepts</div>
+      <div class="section-label">Access Modifiers</div>
+      <table class="compare-table">
+        <tr><th>Modifier</th><th>Visible To</th></tr>
+        <tr><td><code>public</code></td><td>Everywhere</td></tr>
+        <tr><td><code>private</code></td><td>Class only (default)</td></tr>
+        <tr><td><code>protected</code></td><td>Class + subclass</td></tr>
+        <tr><td><code>internal</code></td><td>Same assembly</td></tr>
+      </table>
+      <pre><span class="c">// Auto property</span>
+<span class="k">public int</span> Pages { <span class="k">get</span>; <span class="k">set</span>; }
+
+<span class="c">// Read-only public, private set</span>
+<span class="k">public decimal</span> Bal { <span class="k">get</span>; <span class="k">private set</span>; }
+
+<span class="c">// Object initializer</span>
+<span class="k">var</span> p = <span class="k">new</span> <span class="t">Person</span> { Name = <span class="s">"Arun"</span>, Age = 21 };
+
+<span class="c">// Constructor chaining</span>
+<span class="k">public</span> <span class="t">Book</span>() : <span class="k">this</span>(<span class="s">"Unknown"</span>, 0) {}
+<span class="k">public</span> <span class="t">Book</span>(<span class="k">string</span> title, <span class="k">int</span> pages) { }</span></pre>
+      <div class="tip red">Never: <code>set { Name = value; }</code> → recursive! Use a backing field.</div>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other OOP Concepts</div>
+      <table class="compare-table">
+        <tr><th>Modifier</th><th>Visible To</th></tr>
+        <tr><td><code>protected internal</code></td><td>Subclass OR assembly</td></tr>
+        <tr><td><code>private protected</code></td><td>Subclass AND assembly</td></tr>
+      </table>
+      <pre><span class="c">// Backing field</span>
+<span class="k">private string</span> _name;
+<span class="k">public string</span> Name {
+  <span class="k">get</span> => _name;
+  <span class="k">set</span> => _name = value?.<span class="m">Trim</span>();
+}
+
+<span class="c">// Call base class ctor</span>
+<span class="k">public</span> <span class="t">Student</span>(<span class="k">string</span> n, <span class="k">int</span> id) : <span class="k">base</span>(n) {}
+
+<span class="c">// Indexer — access like array</span>
+<span class="k">public int this</span>[<span class="k">int</span> i] {
+  <span class="k">get</span> => _arr[i];
+  <span class="k">set</span> => _arr[i] = value;
+}
+obj[0] = 100;</pre>
+      <div class="section-label">Struct vs Class</div>
+      <table class="compare-table">
+        <colgroup><col style="width:55%"><col style="width:22.5%"><col style="width:22.5%"></colgroup>
+        <tr><th></th><th>struct</th><th>class</th></tr>
+        <tr><td>Stored on</td><td>Stack</td><td>Heap</td></tr>
+        <tr><td>Assigned as</td><td>Copy</td><td>Reference</td></tr>
+        <tr><td>Inherits</td><td>No</td><td>Yes</td></tr>
+      </table>
+      <div class="row">
+        <span class="pill blue">int → 0</span>
+        <span class="pill blue">bool → false</span>
+        <span class="pill blue">string → null</span>
+        <span class="pill blue">DateTime → MinValue</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INHERITANCE & POLYMORPHISM -->
+<div class="card">
+  <h2>Inheritance, Polymorphism &amp; Interfaces</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <pre><span class="c">// Single inheritance</span>
+<span class="k">public class</span> <span class="t">Dog</span> : <span class="t">Animal</span> { }
+
+<span class="c">// virtual + override (runtime polymorphism)</span>
+<span class="k">public virtual void</span> <span class="m">Speak</span>() { }      <span class="c">// base</span>
+<span class="k">public override void</span> <span class="m">Speak</span>() { }     <span class="c">// derived</span>
+
+<span class="c">// Call base class method</span>
+<span class="k">public override void</span> <span class="m">Init</span>() {
+  <span class="k">base</span>.<span class="m">Init</span>(); <span class="c">// extend, not replace</span>
+}
+
+<span class="c">// Interface</span>
+<span class="k">public interface</span> <span class="t">IFly</span> { <span class="k">void</span> <span class="m">Fly</span>(); }
+
+<span class="c">// Multiple interfaces</span>
+<span class="k">class</span> <span class="t">Eagle</span> : <span class="t">Bird</span>, <span class="t">IFly</span>, <span class="t">IHunter</span> { }
+
+<span class="c">// Enum</span>
+<span class="k">enum</span> <span class="t">Status</span> { Pending=1, Done=5, Failed=10 }
+<span class="t">Status</span> s = <span class="t">Status</span>.Done;
+<span class="k">int</span> v = (<span class="k">int</span>)s; <span class="c">// 5</span></pre>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other / Advanced</div>
+      <div class="section-label">Abstract Class vs Interface</div>
+      <table class="compare-table">
+        <colgroup><col style="width:55%"><col style="width:22.5%"><col style="width:22.5%"></colgroup>
+        <tr><th></th><th>Abstract</th><th>Interface</th></tr>
+        <tr><td>Fields / State</td><td>✅</td><td>❌</td></tr>
+        <tr><td>Constructors</td><td>✅</td><td>❌</td></tr>
+        <tr><td>Multiple inherit</td><td>❌</td><td>✅</td></tr>
+        <tr><td>Can instantiate</td><td>❌</td><td>❌</td></tr>
+      </table>
+      <pre><span class="c">// Abstract class</span>
+<span class="k">public abstract class</span> <span class="t">Shape</span> {
+  <span class="k">public abstract double</span> <span class="m">Area</span>();  <span class="c">// must implement</span>
+  <span class="k">public void</span> <span class="m">ShowName</span>() { }      <span class="c">// concrete</span>
+}
+
+<span class="c">// Method hiding (NOT polymorphic!)</span>
+<span class="k">public new void</span> <span class="m">Show</span>() { }
+
+<span class="c">// Explicit interface implementation</span>
+<span class="k">void</span> <span class="t">IPrinter</span>.<span class="m">Print</span>() { } <span class="c">// must cast to use</span>
+
+<span class="c">// Sealed class — no further inheritance</span>
+<span class="k">sealed class</span> <span class="t">Final</span> { }</pre>
+      <div class="tip">Override = runtime dispatch. new = compile-time hiding. Always prefer override.</div>
+    </div>
+  </div>
+</div>
+
+<!-- GENERICS & EXCEPTIONS -->
+<div class="card">
+  <h2>Generics &amp; Exceptions</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Generics — Most Used</div>
+      <pre><span class="c">// Generic class</span>
+<span class="k">class</span> <span class="t">Box</span>&lt;T&gt; {
+  <span class="k">public</span> T Item { <span class="k">get</span>; <span class="k">set</span>; }
+}
+<span class="t">Box</span>&lt;<span class="k">int</span>&gt; b = <span class="k">new</span>() { Item = 10 };
+<span class="t">Box</span>&lt;<span class="k">string</span>&gt; s = <span class="k">new</span>() { Item = <span class="s">"Hi"</span> };
+
+<span class="c">// Generic method</span>
+<span class="k">public</span> T <span class="m">GetDefault</span>&lt;T&gt;() => <span class="k">default</span>(T);
+
+<span class="c">// Constraints</span>
+<span class="k">class</span> <span class="t">Repo</span>&lt;T&gt; <span class="k">where</span> T : <span class="k">class</span>, <span class="k">new</span>() { }</pre>
+      <div class="section-label">Exceptions — Most Used</div>
+      <pre><span class="k">try</span> { <span class="c">/* risky code */</span> }
+<span class="k">catch</span>(<span class="t">DivideByZeroException</span> e) {
+  Console.<span class="m">WriteLine</span>(e.Message);
+}
+<span class="k">catch</span>(<span class="t">Exception</span> e) { <span class="c">/* catch all */</span> }
+<span class="k">finally</span> { <span class="c">/* ALWAYS runs (cleanup) */</span> }</pre>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Exceptions — Other</div>
+      <pre><span class="c">// Custom exception</span>
+<span class="k">class</span> <span class="t">InvalidAgeException</span> : <span class="t">Exception</span> {
+  <span class="k">public</span> <span class="t">InvalidAgeException</span>(<span class="k">string</span> msg)
+    : <span class="k">base</span>(msg) { }
+}
+<span class="k">throw new</span> <span class="t">InvalidAgeException</span>(<span class="s">"Must be 18+"</span>);</pre>
+      <table>
+        <tr><th>Exception</th><th>When</th></tr>
+        <tr><td>DivideByZeroException</td><td>÷ 0</td></tr>
+        <tr><td>NullReferenceException</td><td>null object used</td></tr>
+        <tr><td>FormatException</td><td>Parse on bad format</td></tr>
+        <tr><td>IndexOutOfRangeException</td><td>invalid array index</td></tr>
+        <tr><td>OverflowException</td><td>value overflow</td></tr>
+        <tr><td>InvalidCastException</td><td>bad type cast</td></tr>
+        <tr><td>ArgumentNullException</td><td>null arg passed</td></tr>
+        <tr><td>KeyNotFoundException</td><td>dict key missing</td></tr>
+        <tr><td>StackOverflowException</td><td>infinite recursion</td></tr>
+      </table>
+      <div class="tip red">Catch specific before general. finally always runs even on exception.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<div class="chapter-header">► LINQ, Delegates &amp; Events</div>
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- LINQ -->
+<div class="card">
+  <h2>LINQ</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used LINQ Methods</div>
+      <table>
+        <tr><th>Method</th><th>Purpose</th></tr>
+        <tr><td>Where(x => cond)</td><td>filter</td></tr>
+        <tr><td>Select(x => x.Name)</td><td>project / transform</td></tr>
+        <tr><td>OrderBy(x => x.Age)</td><td>sort ascending</td></tr>
+        <tr><td>OrderByDescending</td><td>sort descending</td></tr>
+        <tr><td>FirstOrDefault()</td><td>first or null/default</td></tr>
+        <tr><td>Any(pred)</td><td>any match → bool</td></tr>
+        <tr><td>All(pred)</td><td>all match → bool</td></tr>
+        <tr><td>Count() / Count(pred)</td><td>count all/matching</td></tr>
+        <tr><td>Sum(x => x.Price)</td><td>total</td></tr>
+        <tr><td>Average(x => x.Score)</td><td>mean</td></tr>
+        <tr><td>Min() / Max()</td><td>extremes</td></tr>
+        <tr><td>ToList() / ToArray()</td><td>materialize</td></tr>
+        <tr><td>GroupBy(x => x.Dept)</td><td>group items</td></tr>
+        <tr><td>Distinct()</td><td>remove duplicates</td></tr>
+      </table>
+      <pre><span class="k">var</span> result = employees
+  .<span class="m">Where</span>(e => e.IsManager)
+  .<span class="m">OrderBy</span>(e => e.LastName)
+  .<span class="m">Select</span>(e => e.FullName)
+  .<span class="m">Take</span>(10)
+  .<span class="m">ToList</span>();</pre>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other LINQ Methods</div>
+      <table>
+        <tr><th>Method</th><th>Purpose</th></tr>
+        <tr><td>SelectMany(x => x.List)</td><td>flatten nested</td></tr>
+        <tr><td>ThenBy(x => x.Name)</td><td>secondary sort</td></tr>
+        <tr><td>First() / Last()</td><td>first/last or throws</td></tr>
+        <tr><td>Single()</td><td>exactly one or throws</td></tr>
+        <tr><td>Take(n) / Skip(n)</td><td>paging</td></tr>
+        <tr><td>TakeWhile(pred)</td><td>take while true</td></tr>
+        <tr><td>SkipWhile(pred)</td><td>skip while true</td></tr>
+        <tr><td>ToDictionary(k,v)</td><td>to dictionary</td></tr>
+        <tr><td>Aggregate(fn)</td><td>custom accumulator</td></tr>
+        <tr><td>Zip(other, fn)</td><td>pair two sequences</td></tr>
+        <tr><td>Concat(other)</td><td>combine sequences</td></tr>
+        <tr><td>Union / Intersect / Except</td><td>set operations</td></tr>
+        <tr><td>Contains(item)</td><td>exists check</td></tr>
+        <tr><td>ElementAt(i)</td><td>by index</td></tr>
+      </table>
+      <div class="section-label">Lambda Expressions</div>
+      <pre><span class="c">// Action — void return</span>
+<span class="t">Action</span>&lt;<span class="k">string</span>&gt; print = s => Console.<span class="m">WriteLine</span>(s);
+
+<span class="c">// Func — returns value</span>
+<span class="t">Func</span>&lt;<span class="k">int</span>,<span class="k">int</span>&gt; sq = x => x * x;
+
+<span class="c">// Query syntax (alternative)</span>
+<span class="k">var</span> q = <span class="k">from</span> e <span class="k">in</span> employees
+        <span class="k">where</span> e.Age > 25
+        <span class="k">select</span> e.Name;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- DELEGATES & EVENTS -->
+<div class="card">
+  <h2>Delegates &amp; Events</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <pre><span class="c">// Action — void</span>
+<span class="t">Action</span>&lt;<span class="k">string</span>&gt; print = s => Console.<span class="m">WriteLine</span>(s);
+
+<span class="c">// Func — returns value</span>
+<span class="t">Func</span>&lt;<span class="k">int</span>,<span class="k">int</span>,<span class="k">int</span>&gt; add = (a,b) => a+b;
+
+<span class="c">// Predicate — bool return</span>
+<span class="t">Predicate</span>&lt;<span class="k">int</span>&gt; even = x => x % 2 == 0;
+
+<span class="c">// Event — subscribe + raise</span>
+<span class="k">public event</span> <span class="t">EventHandler</span>&lt;<span class="t">MyArgs</span>&gt; Changed;
+obj.OnDone += <span class="m">Handler</span>;
+OnDone?.<span class="m">Invoke</span>(<span class="s">"Complete"</span>);
+obj.OnDone -= <span class="m">Handler</span>;</pre>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other / Advanced</div>
+      <pre><span class="c">// Custom delegate declaration</span>
+<span class="k">delegate int</span> <span class="t">MathOp</span>(<span class="k">int</span> x, <span class="k">int</span> y);
+<span class="t">MathOp</span> op = Add;
+<span class="k">int</span> r = op(3, 4); <span class="c">// 7</span>
+
+<span class="c">// Multicast — chain methods</span>
+<span class="t">Action</span> multi = <span class="m">Method1</span>;
+multi += <span class="m">Method2</span>;  <span class="c">// both called</span>
+multi -= <span class="m">Method1</span>;  <span class="c">// remove</span>
+
+<span class="c">// Custom event pattern</span>
+<span class="k">delegate void</span> <span class="t">Notify</span>(<span class="k">string</span> msg);
+<span class="k">public event</span> <span class="t">Notify</span> OnDone;
+
+<span class="c">// EventArgs</span>
+<span class="k">class</span> <span class="t">MyArgs</span> : <span class="t">EventArgs</span> {
+  <span class="k">public string</span> Data { <span class="k">get</span>; <span class="k">init</span>; }
+}</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<div class="chapter-header">► File I/O, Regex &amp; Serialization</div>
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- FILE I/O -->
+<div class="card">
+  <h2>File I/O &amp; Serialization</h2>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <div class="section-label">File Static (System.IO)</div>
+      <table>
+        <tr><th>Method</th><th>Purpose</th></tr>
+        <tr><td>File.WriteAllText(p,txt)</td><td>write full text (overwrite)</td></tr>
+        <tr><td>File.ReadAllText(path)</td><td>read full text</td></tr>
+        <tr><td>File.ReadAllLines(path)</td><td>read into string[]</td></tr>
+        <tr><td>File.AppendAllText(p,txt)</td><td>append text</td></tr>
+        <tr><td>File.Exists(path)</td><td>bool — file exists</td></tr>
+        <tr><td>File.Delete(path)</td><td>delete file</td></tr>
+        <tr><td>File.Copy(src,dst)</td><td>copy file</td></tr>
+        <tr><td>File.Move(src,dst)</td><td>move / rename</td></tr>
+      </table>
+      <div class="section-label" style="margin-top:8px">StreamWriter / StreamReader</div>
+      <pre><span class="k">using</span>(<span class="t">StreamWriter</span> sw = <span class="k">new</span>(<span class="s">"a.txt"</span>)) {
+  sw.<span class="m">WriteLine</span>(<span class="s">"Hello"</span>);
+  sw.<span class="m">Write</span>(<span class="s">"World"</span>);
+}
+<span class="k">using</span>(<span class="t">StreamReader</span> sr = <span class="k">new</span>(<span class="s">"a.txt"</span>)) {
+  <span class="k">string</span> all = sr.<span class="m">ReadToEnd</span>();
+  <span class="k">string</span> line = sr.<span class="m">ReadLine</span>();
+}</pre>
+      <div class="section-label" style="margin-top:8px">JSON Serialization (most common)</div>
+      <pre><span class="k">string</span> json = <span class="t">JsonSerializer</span>.<span class="m">Serialize</span>(obj);
+<span class="t">File</span>.<span class="m">WriteAllText</span>(<span class="s">"d.json"</span>, json);
+<span class="t">Student</span> s = <span class="t">JsonSerializer</span>
+  .<span class="m">Deserialize</span>&lt;<span class="t">Student</span>&gt;(<span class="t">File</span>.<span class="m">ReadAllText</span>(<span class="s">"d.json"</span>));</pre>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other Methods</div>
+      <table>
+        <tr><th>Method</th><th>Purpose</th></tr>
+        <tr><td>File.Create(path)</td><td>creates new file</td></tr>
+        <tr><td>File.WriteAllLines(p,lines)</td><td>write string[] lines</td></tr>
+        <tr><td>File.AppendAllLines(p,lines)</td><td>append lines</td></tr>
+        <tr><td>File.ReadLines(path)</td><td>lazy line-by-line</td></tr>
+        <tr><td>File.OpenRead(path)</td><td>open read stream</td></tr>
+        <tr><td>File.Replace(s,d,bak)</td><td>replace with backup</td></tr>
+      </table>
+      <div class="section-label" style="margin-top:8px">FileInfo (object style)</div>
+      <table>
+        <tr><td>fi.Length</td><td>file size in bytes</td></tr>
+        <tr><td>fi.Name</td><td>file name only</td></tr>
+        <tr><td>fi.Extension</td><td>file extension</td></tr>
+        <tr><td>fi.DirectoryName</td><td>parent folder path</td></tr>
+        <tr><td>fi.Delete()</td><td>delete file</td></tr>
+        <tr><td>fi.CopyTo(dest)</td><td>copy file</td></tr>
+        <tr><td>fi.MoveTo(dest)</td><td>move file</td></tr>
+      </table>
+      <div class="section-label" style="margin-top:8px">Other Serialization</div>
+      <table class="compare-table">
+        <colgroup><col style="width:35%"><col style="width:21.6%"><col style="width:21.6%"><col style="width:21.6%"></colgroup>
+        <tr><th></th><th>Binary</th><th>XML</th><th>JSON</th></tr>
+        <tr><td>Readable</td><td>❌</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Speed</td><td>Fast</td><td>Slow</td><td>Fast</td></tr>
+        <tr><td>API use</td><td>❌</td><td>Rare</td><td>✅</td></tr>
+      </table>
+      <pre><span class="c">// XML</span>
+<span class="t">XmlSerializer</span> xs = <span class="k">new</span>(<span class="k">typeof</span>(<span class="t">Student</span>));
+<span class="c">// Binary (deprecated .NET 5+)</span>
+<span class="k">var</span> bf = <span class="k">new</span> <span class="t">BinaryFormatter</span>();
+bf.<span class="m">Serialize</span>(fs, obj);</pre>
+    </div>
+  </div>
+</div>
+
+<!-- REGEX -->
+<div class="card">
+  <h2>Regex</h2>
+  <pre style="margin-bottom:10px"><span class="k">using</span> System.Text.RegularExpressions;</pre>
+  <div class="split">
+    <div class="pane">
+      <div class="pane-label hot">Most Used</div>
+      <table>
+        <tr><th>Method</th><th>Returns</th></tr>
+        <tr><td>Regex.IsMatch(s,p)</td><td>bool</td></tr>
+        <tr><td>Regex.Match(s,p)</td><td>Match (first)</td></tr>
+        <tr><td>Regex.Matches(s,p)</td><td>MatchCollection (all)</td></tr>
+        <tr><td>Regex.Replace(s,p,r)</td><td>string (replaced)</td></tr>
+        <tr><td>match.Value</td><td>matched text</td></tr>
+        <tr><td>match.Success</td><td>found bool</td></tr>
+      </table>
+      <div class="section-label" style="margin-top:8px">Most Used Symbols</div>
+      <table>
+        <tr><th>Symbol</th><th>Meaning</th></tr>
+        <tr><td>\d / \D</td><td>digit / non-digit</td></tr>
+        <tr><td>\w / \W</td><td>word char / non-word</td></tr>
+        <tr><td>^ / $</td><td>start / end of string</td></tr>
+        <tr><td>+ / * / ?</td><td>1+ / 0+ / 0 or 1</td></tr>
+        <tr><td>{n} / {n,m}</td><td>exactly n / n to m</td></tr>
+        <tr><td>[abc] / [^abc]</td><td>set / negated set</td></tr>
+        <tr><td>(abc)</td><td>capture group</td></tr>
+      </table>
+      <div class="row">
+        <span class="pill green">^\d+$ — digits only</span>
+        <span class="pill green">^\d{10}$ — 10-digit phone</span>
+        <span class="pill purple">^[\w.-]+@[\w.-]+\.\w+$ — email</span>
+        <span class="pill amber">^(?=.*[A-Z])(?=.*\d).{8,}$ — password</span>
+      </div>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other Methods &amp; Symbols</div>
+      <table>
+        <tr><th>Method</th><th>Returns</th></tr>
+        <tr><td>Regex.IsMatch(s,p,opts)</td><td>bool with options</td></tr>
+        <tr><td>Regex.Replace(s,p,r,opts)</td><td>with options</td></tr>
+        <tr><td>Regex.Split(s,p)</td><td>string[] split</td></tr>
+        <tr><td>new Regex(pattern)</td><td>compiled instance</td></tr>
+        <tr><td>regex.IsMatch(s)</td><td>instance match</td></tr>
+        <tr><td>match.Index</td><td>position in string</td></tr>
+        <tr><td>match.Groups[1].Value</td><td>capture group value</td></tr>
+      </table>
+      <div class="section-label" style="margin-top:8px">Other Symbols</div>
+      <table>
+        <tr><th>Symbol</th><th>Meaning</th></tr>
+        <tr><td>.</td><td>any character</td></tr>
+        <tr><td>\s / \S</td><td>whitespace / non-whitespace</td></tr>
+        <tr><td>\b</td><td>word boundary</td></tr>
+        <tr><td>a|b</td><td>OR (a or b)</td></tr>
+        <tr><td>(?=x) / (?!x)</td><td>lookahead +/-</td></tr>
+        <tr><td>(?&lt;=x) / (?&lt;!x)</td><td>lookbehind +/-</td></tr>
+      </table>
+      <pre><span class="t">Match</span> m = <span class="t">Regex</span>.<span class="m">Match</span>(s, p);
+<span class="k">if</span>(m.Success) Console.<span class="m">WriteLine</span>(m.Value);
+
+<span class="c">// All matches</span>
+<span class="k">foreach</span>(<span class="t">Match</span> match <span class="k">in</span> <span class="t">Regex</span>.<span class="m">Matches</span>(s, <span class="s">@"\d+"</span>))
+  Console.<span class="m">WriteLine</span>(match.Value);</pre>
+      <div class="tip red">\b prevents partial matches. Use @ strings! IgnoreCase, Multiline, Compiled are common options.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<div class="chapter-header">► Threading, Async &amp; NUnit</div>
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- THREADING & ASYNC -->
+<div class="card">
+  <h2>Threading, Parallel &amp; Async</h2>
+  <div class="split3">
+    <div class="pane">
+      <div class="pane-label hot">Async / Await (Most Used)</div>
+      <pre><span class="c">// void → Task, T → Task&lt;T&gt;</span>
+<span class="k">async</span> <span class="t">Task</span> <span class="m">DownloadAsync</span>() {
+  <span class="k">await</span> <span class="t">Task</span>.<span class="m">Delay</span>(2000);
+}
+<span class="k">async</span> <span class="t">Task</span>&lt;<span class="k">int</span>&gt; <span class="m">GetValueAsync</span>() {
+  <span class="k">await</span> <span class="t">Task</span>.<span class="m">Delay</span>(500);
+  <span class="k">return</span> 42;
+}
+<span class="k">int</span> v = <span class="k">await</span> <span class="m">GetValueAsync</span>();
+
+<span class="c">// Parallel async (WhenAll)</span>
+<span class="k">var</span> tasks = items.<span class="m">Select</span>(i => <span class="m">ProcessAsync</span>(i));
+<span class="k">await</span> <span class="t">Task</span>.<span class="m">WhenAll</span>(tasks);
+
+<span class="c">// Task with result</span>
+<span class="t">Task</span>&lt;<span class="k">int</span>&gt; t = <span class="t">Task</span>.<span class="m">Run</span>(() => 42);
+<span class="k">int</span> val = <span class="k">await</span> t;</pre>
+      <div class="tip green">No thread blocking. Best for file/network/DB I/O. Always await or exception is swallowed.</div>
+    </div>
+    <div class="pane">
+      <div class="pane-label hot">Parallel (CPU-bound)</div>
+      <pre><span class="k">using</span> System.Threading.Tasks;
+
+<span class="t">Parallel</span>.<span class="m">For</span>(1, 6, i => {
+  Console.<span class="m">WriteLine</span>(i);
+});
+
+<span class="t">Parallel</span>.<span class="m">ForEach</span>(list, item => {
+  Console.<span class="m">WriteLine</span>(item);
+});
+
+<span class="c">// Task (explicit)</span>
+<span class="t">Task</span> task = <span class="t">Task</span>.<span class="m">Run</span>(() => {
+  Console.<span class="m">WriteLine</span>(<span class="s">"Background"</span>);
+});
+<span class="k">await</span> task;
+
+<span class="c">// First to complete</span>
+<span class="k">await</span> <span class="t">Task</span>.<span class="m">WhenAny</span>(t1, t2);</pre>
+      <div class="tip">Parallel auto multi-core. Order not guaranteed. Use for CPU-intensive loops.</div>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Thread (manual — less common)</div>
+      <pre><span class="k">using</span> System.Threading;
+<span class="t">Thread</span> t = <span class="k">new</span> <span class="t">Thread</span>(<span class="m">DoWork</span>);
+t.<span class="m">Start</span>();
+<span class="t">Thread</span>.<span class="m">Sleep</span>(1000);
+t.<span class="m">Join</span>();   <span class="c">// wait to finish</span>
+t.IsAlive;  <span class="c">// bool</span>
+t.Priority; <span class="c">// ThreadPriority</span>
+
+<span class="c">// Lambda shortcut (closure)</span>
+<span class="t">Thread</span> t3 = <span class="k">new</span>(() => <span class="m">Process</span>(data));
+t3.<span class="m">Start</span>();
+
+<span class="c">// Parameterized thread</span>
+<span class="t">Thread</span> t2 = <span class="k">new</span>(<span class="k">o</span> => {
+  <span class="k">var</span> order = (<span class="t">Order</span>)<span class="k">o</span>!;
+});
+t2.<span class="m">Start</span>(orderObj);</pre>
+      <div class="tip">Pass data via lambda closure — no ParameterizedThreadStart needed.</div>
+    </div>
+  </div>
+</div>
+
+<!-- NUNIT -->
+<div class="card">
+  <h2>NUnit Testing</h2>
+  <div class="split3">
+    <div class="pane">
+      <div class="pane-label hot">Most Used — Structure</div>
+      <pre>[<span class="t">TestFixture</span>]
+<span class="k">public class</span> <span class="t">CalcTests</span> {
+  <span class="k">private</span> <span class="t">Calculator</span> calc;
+
+  [<span class="t">SetUp</span>]
+  <span class="k">public void</span> <span class="m">Init</span>() => calc = <span class="k">new</span>();
+
+  [<span class="t">TearDown</span>]
+  <span class="k">public void</span> <span class="m">Cleanup</span>() { }
+
+  [<span class="t">Test</span>]
+  <span class="k">public void</span> <span class="m">Add_Returns5</span>() {
+    Assert.<span class="m">AreEqual</span>(5, calc.<span class="m">Add</span>(2,3));
+  }
+
+  [<span class="t">TestCase</span>(2, 3, 5)]
+  [<span class="t">TestCase</span>(0, 0, 0)]
+  <span class="k">public void</span> <span class="m">Add_Param</span>(<span class="k">int</span> a, <span class="k">int</span> b, <span class="k">int</span> exp)
+    => Assert.<span class="m">AreEqual</span>(exp, calc.<span class="m">Add</span>(a,b));
+}</pre>
+    </div>
+    <div class="pane">
+      <div class="pane-label hot">Most Used — Assert</div>
+      <table>
+        <tr><th>Method</th><th>Checks</th></tr>
+        <tr><td>AreEqual(exp, act)</td><td>Equal values</td></tr>
+        <tr><td>IsTrue(cond)</td><td>condition is true</td></tr>
+        <tr><td>IsFalse(cond)</td><td>condition is false</td></tr>
+        <tr><td>IsNull(obj)</td><td>obj is null</td></tr>
+        <tr><td>IsNotNull(obj)</td><td>obj is not null</td></tr>
+        <tr><td>Throws&lt;T&gt;(() => m())</td><td>exception thrown</td></tr>
+        <tr><td>Greater(a,b)</td><td>a &gt; b</td></tr>
+        <tr><td>Less(a,b)</td><td>a &lt; b</td></tr>
+      </table>
+      <pre><span class="c">// Exception test</span>
+Assert.<span class="m">Throws</span>&lt;<span class="t">DivideByZeroException</span>&gt;(
+  () => calc.<span class="m">Divide</span>(10, 0)
+);
+<span class="c">// Message in Assert</span>
+Assert.<span class="m">AreEqual</span>(5, result, <span class="s">"Add failed!"</span>);</pre>
+    </div>
+    <div class="pane">
+      <div class="pane-label cold">Other Assert Methods</div>
+      <table>
+        <tr><th>Method</th><th>Checks</th></tr>
+        <tr><td>AreNotEqual(e, a)</td><td>Not equal</td></tr>
+        <tr><td>GreaterOrEqual(a,b)</td><td>a &gt;= b</td></tr>
+        <tr><td>LessOrEqual(a,b)</td><td>a &lt;= b</td></tr>
+        <tr><td>Zero(x)</td><td>x == 0</td></tr>
+        <tr><td>NotZero(x)</td><td>x != 0</td></tr>
+        <tr><td>AreSame(a,b)</td><td>same reference</td></tr>
+        <tr><td>IsInstanceOf&lt;T&gt;(obj)</td><td>obj is of type T</td></tr>
+        <tr><td>DoesNotThrow(() => m())</td><td>no exception</td></tr>
+        <tr><td>Pass() / Fail(msg)</td><td>force pass/fail</td></tr>
+      </table>
+      <div class="section-label" style="margin-top:8px">String &amp; Collection Asserts</div>
+      <table>
+        <tr><th>StringAssert</th><th>Checks</th></tr>
+        <tr><td>Contains(sub,str)</td><td>has substring</td></tr>
+        <tr><td>StartsWith(pre,str)</td><td>prefix match</td></tr>
+        <tr><td>EndsWith(suf,str)</td><td>suffix match</td></tr>
+        <tr><td>IsMatch(pattern,str)</td><td>regex match</td></tr>
+      </table>
+      <table style="margin-top:6px">
+        <tr><th>CollectionAssert</th><th>Checks</th></tr>
+        <tr><td>AreEqual(exp,act)</td><td>same + same order</td></tr>
+        <tr><td>AreEquivalent(e,a)</td><td>same, any order</td></tr>
+        <tr><td>Contains(col,item)</td><td>item exists</td></tr>
+        <tr><td>IsEmpty(col)</td><td>no elements</td></tr>
+        <tr><td>AllItemsAreUnique</td><td>no duplicates</td></tr>
+        <tr><td>IsSubsetOf(sub,main)</td><td>partial include</td></tr>
+        <tr><td>IsOrdered(col)</td><td>ascending order</td></tr>
+      </table>
+      <pre>[<span class="t">OneTimeSetUp</span>]    <span class="c">// once before ALL</span>
+[<span class="t">OneTimeTearDown</span>] <span class="c">// once after ALL</span>
+[<span class="t">Ignore</span>(<span class="s">"Not ready"</span>)] <span class="c">// skip test</span></pre>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
